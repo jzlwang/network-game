@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/cs61b_pj2/!svn/ver/32/trunk/player
+END
+Direction.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/cs61b_pj2/!svn/ver/24/trunk/player/Direction.java
+END
+MachinePlayer.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/cs61b_pj2/!svn/ver/32/trunk/player/MachinePlayer.java
+END
+Evaluator.java
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/cs61b_pj2/!svn/ver/31/trunk/player/Evaluator.java
+END
+Position.java
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/cs61b_pj2/!svn/ver/32/trunk/player/Position.java
+END
+BestMove.java
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/cs61b_pj2/!svn/ver/27/trunk/player/BestMove.java
+END
+Node.java
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/cs61b_pj2/!svn/ver/32/trunk/player/Node.java
+END
+Move.java
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/cs61b_pj2/!svn/ver/2/trunk/player/Move.java
+END
+Board.java
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/cs61b_pj2/!svn/ver/32/trunk/player/Board.java
+END
+Player.java
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/cs61b_pj2/!svn/ver/2/trunk/player/Player.java
+END

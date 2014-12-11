@@ -1,0 +1,436 @@
+/* Board.java */
+
+package player;
+
+import list.*;
+
+/**
+ *  A data structure to store nodes on a board.
+ *
+ *
+ */
+public class Board implements Cloneable {
+
+  public static final int COLOR_BLACK = 0;
+  public static final int COLOR_WHITE = 1;
+  public static final int COLOR_NONE = -1;
+
+  private Node[][] board;
+  private int[] chipcount;
+
+  /**
+   * Board constructor w/ no params
+   * creates 8x8 2D Node array
+   */
+  protected Board()
+  {
+    board = new Node[8][8];
+    for (int i = 0; i < 8; i++)
+    {
+      for (int j = 0; j < 8; j++)
+      {
+        board[i][j] = new Node(COLOR_NONE, new Position(i, j));
+      }
+    }
+
+    chipcount = new int[]{0, 0};
+  }
+
+  public void setChip(int color, int x, int y)
+  {
+    board[x][y] = new Node(color, new Position(x,y));
+    chipcount[color]++;
+  }
+
+  public void clearChip(int x, int y)
+  {
+    chipcount[getNode(x, y).color]--;
+    board[x][y] = new Node(COLOR_NONE, new Position(x,y));
+  }
+
+  /**
+   * @return Node from specified xy-coordinate
+   * @param x is x-coordinate
+   * @param y is y-coordinate
+   */
+  public Node getNode(int x, int y)
+  {
+    if (x >= 0 && x < 8 && y >= 0 && y < 8)
+    {
+      return board[x][y];
+    }
+    else
+    {
+      return new Node(COLOR_NONE, new Position(x, y));
+    }
+  }
+
+  /**
+   * @check if Position is good for specified player color
+   * @param p is the Position to check
+   * @param color is black or white
+   */
+  public boolean goodPosition(Position p, int color)
+  {
+    //if the color isn't black or white, return false
+    if (color != COLOR_BLACK && color != COLOR_WHITE)
+    {
+      return false; 
+    }
+    else if (color == COLOR_BLACK)
+    {
+      //if the color is black and it's in goal of white or in a corner, return false
+      if (p.x <= 0 || p.x >= 7 || p.y < 0 || p.y > 7)
+      {
+        return false;
+      }
+    }
+    else if (color == COLOR_WHITE)
+    {
+      //if the color is white and it's in the goal of black or in a corner, return false
+      if (p.x < 0 || p.x > 7 || p.y <= 0 || p.y >= 7)
+      {
+        return false;
+      }
+    }
+    //if all tests passed, return true
+    return true;
+  }
+
+
+  private ArrayList<Position> adjacent(Position p, int color)
+  {
+    ArrayList<Position> nodes = new ArrayList<Position>();
+    for (int i = p.x - 1; i <= p.x + 1; i++)
+    {
+      for (int j = p.y - 1; j <= p.y + 1; j++)
+      {
+        if (i == p.x && j == p.y)
+        {
+          continue;
+        }
+
+        if (getNode(i, j).color == color)
+        {
+          nodes.append(new Position(i, j));
+        }
+      }
+    }
+
+    return nodes;
+  }
+  /**
+   * @return Number of neighbors. Guranteed to be LESS than or EQUAL than the actual number, but accurate up to 2.
+   */
+  public int countCluster(Position p, int color)
+  {
+    ArrayList<Position> nodes = adjacent(p, color);
+
+    int max = nodes.length();
+
+    for (int i = 0; i < nodes.length(); i++)
+    {
+      max = Math.max(max, adjacent(nodes.Get(i), color).length() + 1);
+    }
+
+    return max;
+  }
+
+  public boolean makeMove(Move move, int color)
+  {
+    if (isValidMove(move, color))
+    {
+      if (move.moveKind == Move.STEP)
+      {
+        clearChip(move.x2,move.y2);
+      }
+      setChip(color, move.x1, move.y1);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * helper for isValidMove
+   * @param move is the move you want to make
+   * @param color is the color of the player making the move
+   */
+  public boolean canMove(Move move, int color) {
+    //if there are already 10 chips on the board, return false
+    if (chipcount[color] >= 10 && move.moveKind == move.ADD)
+    {
+      return false;
+    }
+
+    //if there is already a node in the position, return false
+    if (getNode(move.x1,move.y1).color != COLOR_NONE) {
+      return false;
+    }
+    //the following checks only apply to STEP moves 
+    if (move.moveKind == Move.STEP) {
+      //if the player is tries moving the chip to the same place, return false
+      if (move.x1 == move.x2 && move.y1 == move.y2) {
+        return false;
+      }
+      //if the player tries making a step move prior to using up his add moves, return false
+      if (chipcount[color] < 10) {
+        return false;
+      }
+    }
+    //find the neighbors around the prospective move
+    if (countCluster(new Position(move.x1,move.y1), color) >= 2)
+    {
+      return false;
+    }
+    //otherwise the move is legal, return true
+    return true;
+  }
+
+  /**
+   * checks to see if a given move is valid for the given color.
+   * @param move is the move you want to make
+<<<<<<< .mine
+   * @param color is the color of the player making the move
+   */
+  public boolean canMove(Move move, int color) {
+    //if there are already 10 chips on the board, return false
+    if (getChipCount(color) >= 10) {
+      return false;
+    }
+    //if it's in a goal area of the opposite color or in a corner, return false
+    if (!(goodPosition(new Position(move.x1,move.y1),color))) {
+=======
+   * @param color is the color of the player making the move
+   */ 
+  public boolean isValidMove(Move move, int color) {
+    if (!(goodPosition(new Position(move.x1,move.y1), color))) {
+>>>>>>> .r27
+      return false;
+    }
+<<<<<<< .mine
+    //if there is already a node in the position, return false
+    if (getNode(move.x1,move.y1) != null) {
+      return false;
+    }
+    //the following checks only apply to STEP moves 
+    if (move.moveKind == STEP) {
+      //if the player is tries moving the chip to the same place, return false
+      if (move.x1 == move.x2 && move.y1 == move.y2) {
+        return false;
+      }
+      //if the player tries making a step move prior to using up his add moves, return false
+      if (getChipCount(color) < 9) {
+        return false;
+      }
+    }
+    //find the neighbors around the prospective move
+    ArrayList<Node> n = getNeighbors(new Position(move.x1,move.y1),color);
+    //if it has two or more neighbors, return false
+    if (n.length() >= 2) {
+      return false;
+    }
+    if (n.length() == 1) {
+      //if it has one neighbor whose list of neighbors is not empty, return false
+      if (getNeighbors(n.first().pos, color).length() > 0) {
+        return false;
+      }
+    }
+    //otherwise the move is legal, return true
+    return true;
+  }
+ 
+/**
+  * checks to see if a given move is valid for the given color.
+  * @param move is the move you want to make
+  * @param color is the color of the player making the move
+  */ 
+  public boolean isValidMove(Move move, int color) {
+=======
+
+>>>>>>> .r27
+    //if the move is an ADD move
+    if (move.moveKind == Move.ADD)
+    {
+      //call helper to check validity of move
+      if (canMove(move,color)) {
+        return true;
+      } 
+    }
+    else if (move.moveKind == Move.STEP) { //otherwise if it's a STEP move
+      //temporarily remove chip from old pos
+      clearChip(move.x2, move.y2);
+      //check validity with helper
+      if (canMove(move,color))
+      {
+        //always put a chip back, true or false
+        setChip(color, move.x2, move.x2);
+        return true;
+      } else {
+        setChip(color, move.x2, move.y2);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * makes a ArrayList of Moves; the list of all moves a player can make at the moment.
+   * @param color is the color of the player we are evaluating
+   */
+  public ArrayList<Move> FindValidMoves(int color) {
+    //make an array moves to keep all valid moves
+    ArrayList<Move> moves = new ArrayList<Move>();
+
+    if (chipcount[color] < 10)
+    {
+      //check every coordinate on the board
+      for(int i=0; i<8; i++) {
+        for(int j=0; j<8; j++) {
+          Move add = new Move(i,j);
+          //if we can add the chip, add the move to moves
+          if (isValidMove(add, color)) {
+            moves.append(add);
+          } 
+        }
+      }
+    }
+    else
+    {
+      //check every coordinate on the board
+      for(int i=0; i<8; i++) {
+        for(int j=0; j<8; j++) {
+          //if there is a node
+          if(getNode(i,j).color != COLOR_NONE) {
+            //then for this particular node, check every coord on the board again
+            for(int k=0; k<8; k++) {
+              for(int l=0; l<8; l++) {
+                Move step = new Move(k,l,i,j);
+                //if we can move the chip, add the move to moves
+                if(isValidMove(step, color)) {
+                  moves.append(step);
+                }
+              }
+            }
+          }
+        }
+      }
+    } //check the whole board for each coord on the board
+    return moves;
+  }
+
+  @Override
+  protected Object clone()
+  {
+    Board b = new Board();
+
+    for (int i = 0; i < 8; i++)
+    {
+      for (int j = 0; j < 8; j++)
+      {
+        b.board[i][j] = this.board[i][j];
+      }
+    }
+
+    b.chipcount = this.chipcount.clone();
+
+    return b;
+  }
+
+  /**
+   * find all partial networks containing certain chip
+   * @param certain chip represented by position x, position y, and color
+   * @return LinkedList contains all partial networks
+   */
+  public LinkedList<Network> findNetworks(int x, int y, int color){
+    Node node = getNode(x,y);
+    LinkedList<Network> list = new LinkedList<Network>();
+
+    if (getNode(x,y) != null && getNode(x,y).color == color){
+      list = findNetworks(node);
+    }
+    return list;
+  }
+
+  /**
+   * find all partial networks containing certain chip
+   * @param certain chip represented by node
+   * @return LinkedList contains all partial networks
+   */
+
+  public LinkedList<Network> findNetworks(Node n)
+  {    
+    return this.findNetworks(n, Direction.NONE);
+  }
+
+  public LinkedList<Network> findNetworks(Node n, Direction previousDirection)
+  {
+    Node curr = n;
+    LinkedList<Network> networks = new LinkedList<Network>();
+
+    if( curr != null)
+    {
+      for (Direction d : Direction.DIRECTIONS)
+      {
+        if (d == Direction.reverse(previousDirection) || d == previousDirection)
+        {
+          continue;
+        }
+
+        Node next = this.getNext(curr, d);
+        if (next == null)
+        {
+          continue;
+        }
+
+        LinkedList<Node> network = new LinkedList<Node>();
+        network.append(curr);
+        network.append(next);
+        networks.append(new Network(network));
+      }
+    }
+    return networks;
+  }
+
+  private Node getNext(Node curr, Direction direction)
+  {
+    int x = curr.pos.x + direction.xIncrement;
+    int y = curr.pos.y + direction.yIncrement;
+    while (x >= 0 && x < 8 && y >= 0 && y < 8)
+    {
+      if (getNode(x, y).color == COLOR_NONE)
+      {
+        x += direction.xIncrement;
+        y += direction.yIncrement;
+      }
+      else if (getNode(x, y).color == curr.color)
+      {
+        return getNode(x, y);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    return null;
+  }
+
+
+  public double evaluate()
+  {
+    return new java.util.Random().nextDouble();
+  }
+
+
+  public static void main(String[] args) {
+    Board one = new Board();
+
+    one.setChip(0, 3, 4);
+    one.setChip(0, 4, 5);
+
+    System.out.println(one.findNetworks(one.getNode(3, 4)).first().getSecondChip().toString());
+
+
+  }
+}

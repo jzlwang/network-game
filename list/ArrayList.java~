@@ -1,0 +1,59 @@
+/* ArrayList.java */
+
+package list;
+
+/*
+ * Implementation of an ArrayList with remove functionality.
+ *
+ */
+public class ArrayList<T> implements Iterable
+{
+  private static final int INITIAL_SIZE = 10;
+
+  private T[] items;
+  private int size;
+
+  public ArrayList<T>()
+  {
+    this(ArrayList.INITIAL_SIZE);
+  }
+
+  public ArrayList<T>(int InitialSize)
+  {
+    this.items = new T[InitialSize];
+    this.size = 0;
+  }
+
+  public void Add(T item)
+  {
+    if (this.size == items.length)
+    {
+      Resize(this.size * 2);
+    }
+
+    this.items[this.size] = item;
+    this.size++;
+  }
+
+  private void Resize(int size)
+  {
+    T[] newArray = T[this.size];
+    
+    for (int i = 0; i < this.items.length; i++)
+    {
+      newArray[i] = this.items[i];
+    }
+
+    this.items = newArray;
+  }
+
+  public void Remove(int i)
+  {
+    
+  }
+
+  public void Remove(T item)
+  {
+
+  }
+}

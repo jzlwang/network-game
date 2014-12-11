@@ -1,0 +1,93 @@
+/* MachinePlayer.java */
+
+package player;
+
+/**
+ *  An implementation of an automatic Network player.  Keeps track of moves
+ *  made by both players.  Can select a move for itself.
+ */
+public class MachinePlayer extends Player
+{
+  private static final int DEFAULT_SEARCH_DEPTH = 3;
+
+  private int color;
+  private int searchDepth;
+  
+  private Board board;
+
+  // Creates a machine player with the given color.  Color is either 0 (black)
+  // or 1 (white).  (White has the first move.)
+  public MachinePlayer(int color)
+  {
+    this(color, MachinePlayer.DEFAULT_SEARCH_DEPTH);
+  }
+
+  // Creates a machine player with the given color and search depth.  Color is
+  // either 0 (black) or 1 (white).  (White has the first move.)
+  public MachinePlayer(int color, int searchDepth)
+  {
+    this.board = new Board();
+    this.color = color;
+    this.searchDepth = searchDepth;
+  }
+
+  // Returns a new move by "this" player.  Internally records the move (updates
+  // the internal game board) as a move by "this" player.
+  public Move chooseMove()
+  {
+    double maxScore = Board.WIN_SCORE * Math.pow(this.searchDepth, 2);
+    BestMove bm = Evaluator.findBestMove(this.color, this.color, this.board, -maxScore, maxScore, this.searchDepth);
+    Move m = bm.move;
+    forceMove(m);
+    return m;
+  } 
+
+  // If the Move m is legal, records the move as a move by the opponent
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method allows your opponents to inform you of their moves.
+  public boolean opponentMove(Move m)
+  {
+    return board.makeMove(m, 1 - this.color);  
+  }
+
+  // If the Move m is legal, records the move as a move by "this" player
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method is used to help set up "Network problems" for your
+  // player to solve.
+  public boolean forceMove(Move m)
+  {
+    return board.makeMove(m, this.color);
+  }
+
+  public static void main(String[] args)
+  {
+    MachinePlayer p = new MachinePlayer(Board.COLOR_WHITE);
+
+    p.forceMove(new Move(0, 1));
+    p.forceMove(new Move(1, 1));
+    p.forceMove(new Move(3, 3));
+    p.forceMove(new Move(3, 4));
+    p.forceMove(new Move(5, 6));
+    p.forceMove(new Move(7, 6));
+
+    System.out.println(p.board.hasWin());
+
+    p = new MachinePlayer(Board.COLOR_WHITE);
+
+    p.forceMove(new Move(0, 3));
+    p.forceMove(new Move(2, 1));
+    p.forceMove(new Move(3, 1));
+    p.forceMove(new Move(3, 3));
+    p.forceMove(new Move(4, 3));
+    p.forceMove(new Move(7, 1));
+
+    System.out.println(p.board.hasWin());
+  }
+
+  private static boolean connected(int x, int y, int a, int b)
+  {
+    return (new Board()).getAdjacency(new Node(Board.COLOR_WHITE, new Position(x, y)), new Node(Board.COLOR_WHITE, new Position(a, b))) != null;
+  }
+}
